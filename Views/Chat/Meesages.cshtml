@@ -1,0 +1,33 @@
+﻿@model IEnumerable<MyWebsite.Models.Chat_Room>
+
+@foreach (var item in Model)
+{
+    <div class="messageBox-item">
+        <a href="@Url.Action("Details", new { id = item.ID })">
+
+            <b>
+                @if (item.Users.Count == 2)
+                {
+                    @item.Users.Single(s => s.User.Email != User.Identity.Name).User.ForName<span> </span> @item.Users.Single(s => s.User.Email != User.Identity.Name).User.SurName
+                }
+            </b>
+            @if (item.Users.Single(x => x.User.Email == User.Identity.Name).LastView.CompareTo(item.LastUpdate)<0)
+            {
+                <span>Nowa</span>
+            }
+            <p>
+                @if (item.Messages.Count > 0)
+                {
+                    if (item.Messages.OrderByDescending(x => x.Date).First().Text.Length > 30)
+                    {
+                        @item.Messages.OrderByDescending(x => x.Date).First().Text.Substring(0, 30);
+                    }
+                    else
+                    {
+                        @item.Messages.OrderByDescending(x => x.Date).First().Text
+                    }
+                }
+            </p>
+        </a>
+    </div>
+}

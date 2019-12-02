@@ -1,0 +1,81 @@
+﻿@model MyWebsite.Models.User
+<div id="menu-btn" class="menu-btn" onclick="openNav()">
+    <i id="menu-btn-icon" class="fa fa-bars"></i>
+</div>
+<div id="notification-btn" class="notification-btn" onclick="openNotifications()">
+    <i id="notification-btn-icon" class="fa fa-bell"></i>
+</div>
+<div id="message-btn" class="message-btn" onclick="openMessageBox()">
+    <i id="message-btn-icon" class="fa fa-comments"></i>
+</div>
+<div id="logout-btn" class="logout-btn" onclick="javascript:document.getElementById('logoutForm').submit()">
+    <i class="fa fa-power-off"></i>
+</div>
+
+<div id="mySidebar2" class="sidebar2">
+    <div class="admin-messages pull-left">
+                @{Html.RenderAction("Meesages", "Chat");}
+        <div class="messageBox-more">
+            <a href="@Url.Action("Index","Chat")">Zobacz więcej</a>
+        </div>
+
+    </div>
+</div>
+
+<div id="mySidebar1" class="sidebar1">
+    <div class="admin-notification pull-left">
+        <div class="dropup-content">
+            @foreach (var item in Model.User_Notification.ToList().Take(10))
+            {
+                <a href="@item.Url">@item.Name</a>
+            }
+            <a href="@Url.Action("Index","Notifications")">Zobacz więcej</a>
+
+        </div>
+
+    </div>
+</div>
+
+
+<div id="mySidebar" class="sidebar">
+    <div class="admin-userpanel">
+        <div class="admin-avatar-circle pull-left">
+            <a href="@Url.Action( "Index", "Manage", routeValues: null)">
+                @if (Model.Photo != null)
+                {
+                    <div class="avatar-circle" style="background-image:  url('/Images/User/@Model.Photo');"></div>
+                }
+                else
+                {
+                    <div class="avatar-circle" style="background-image:  url('/Images/Admin/User.jpg');"></div>
+                }
+
+            </a>
+        </div>
+        <div class="admin-userpanel-center">
+         
+            <div class="admin-logout pull-right">
+                <a href="@Url.Action( "Index", "Manage", routeValues: null)">Moje Konto</a>
+            </div>
+        </div>
+    </div>
+    <div class="admin-mainmenu">
+        <ul class="admin-profile-menu">
+            <li><a href="@Url.Action( "Index", "Admin")"><i class="fa fa-dashboard"></i><span>Panel</span></a></li>
+            <li><a href="@Url.Action( "Index", "PageContacts")"><i class="fa fa-envelope"></i><span>Poczta</span></a></li>
+            <li><a href="@Url.Action( "Index", "Users")"><i class="fa fa-phone-square"></i><span>Kontakty</span></a></li>
+            <li><a href="@Url.Action( "Index", "Newsletters")"><i class="fa fa-envelope-square"></i><span>Newsletter</span></a></li>
+        </ul>
+        <ul class="admin-page-content-menu">
+            <li><a href="@Url.Action( "Index", "Products")"><i class="fa fa-dropbox"></i><span>Treść</span></a></li>
+            <li><a href="@Url.Action( "Index", "Products")"><i class="fa fa-dropbox"></i><span>Produkty</span></a></li>
+            <li><a href="@Url.Action( "Index", "Articles")"><i class="fa fa-file-text"></i><span>Artykuły</span></a></li>
+            <li><a href="@Url.Action( "Details", "CVs")"><i class="fa fa-user"></i><span>CV</span></a></li>
+            <li><a href="@Url.Action( "Index", "Portfolios")"><i class="fa fa-sitemap"></i><span>Portfolio</span></a></li>
+            <li><a href="@Url.Action( "Index", "Purchases")"><i class="fa fa-money"></i><span>Zamówienia</span></a></li>
+            <li><a href="@Url.Action( "Index", "System_Logs")"><i class="fa fa-server"></i><span>System</span></a></li>
+        </ul>
+    </div>
+
+</div>
+@Scripts.Render("~/Scripts/Sites/Admin/Menu.js")

@@ -1,0 +1,274 @@
+﻿@model IEnumerable<MyWebsite.Models.ProductsCategory>
+
+@{
+    ViewBag.Title = "Index";
+}
+<div class="container">
+    <div class="row">
+            @{Html.RenderAction("Menu", "Admin");}
+        <div class="col-12 pl-50px">
+            <h2 class="float-left">Kategorie produktów</h2>
+
+            <div class="float-right">
+                <a href="@Url.Action("Index","Products")" class="btn btn-default list-btn-rounded pull-right"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+                <a data-toggle="modal" data-target="#myModal" class="btn btn-default list-btn-rounded pull-right"><i class="fa fa-plus" aria-hidden="true"></i></a>
+            </div>
+            <table id="ProductCategoriesTable" class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CategoryName)
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr id="productCategory-@item.Id">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CategoryName)
+                        </td>
+                        <td class="list-btn">
+                            <a data-toggle="modal" data-target="#myModal2" title="Edit" onclick="load_product_category(@item.Id)"><i class="fa fa-pencil list-edit-btn " aria-hidden="true"></i></a>
+                            <a data-toggle="modal" data-target="#myModal1" title="Usuń" onclick="delete_product_category(@item.Id)"><i class="fa fa-trash list-delete-btn" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dodaj Kategorię Produktu</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="clear_add_product_category()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="control-label">Nazwa Kategorii:</p>
+                    <input class="form-control" type="text" id="modal-ProductCategory-name" />
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="AddProductCategory" type="button" class="btn btn-default btn-success float-left" data-dismiss="modal">Dodaj</button>
+                <button type="button" class="btn btn-default btn-danger float-right" data-dismiss="modal" onclick="clear_add_product_category()">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModal2" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dodaj Kategorię Produktu</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="clear_edit_product_category()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <input hidden class="form-control" type="text" id="modal-Edit-ProductCategory-id" />
+                    <p class="control-label">Nazwa Kategorii:</p>
+                    <input class="form-control" type="text" id="modal-Edit-ProductCategory-name" />
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="EditProductCategory" type="button" class="btn btn-default btn-success float-left" data-dismiss="modal">Dodaj</button>
+                <button type="button" class="btn btn-default btn-danger float-right" data-dismiss="modal" onclick="clear_edit_product_category()">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModal1" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Usuń</h4>
+                <button type="button" class="close" data-dismiss="modal"  onclick="clear_del_product_category()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Czy na pewno chcesz usunąć ten element?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-CV-delete-confirmed" type="button" class="btn btn-default btn-success pull-left" data-dismiss="modal">Tak</button>
+                <button type="button" class="btn btn-default btn-danger pull-left" data-dismiss="modal"  onclick="clear_del_product_category()">Nie</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function clear_edit_product_category() {
+        $('#modal-Edit-ProductCategory-id').val("");
+        $('#modal-Edit-ProductCategory-name').val("");
+    }
+    function clear_add_product_category() {
+        $('#modal-ProductCategory-name').val("");
+    }
+    function clear_del_product_category() {
+        $('#modal-delete-confirmed').attr('onClick', '');
+    }
+    $(function () {
+        $('#AddProductCategory').click(function () {
+            jQuery.ajax({
+                type: "POST",
+                url: "@Url.Action("Create", "ProductCategories", null, Request.Url.Scheme, null)",
+                data: {
+                    'CategoryName': $('#modal-ProductCategory-name').val(),
+                },
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": true,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (data.text == "Added") {
+
+                        var tr = document.createElement("tr");
+                        var td = document.createElement("td");
+                        var tde = document.createElement("td");
+
+                        var ed = document.createElement("a");
+                        var del = document.createElement("a");
+
+                        var aed = document.createElement("i");
+                        var adel = document.createElement("i");
+                        aed.setAttribute("class", "fa fa-pencil list-edit-btn");
+                        aed.setAttribute("aria-hidden", "true");
+                        adel.setAttribute("class", "fa fa-trash list-delete-btn");
+                        adel.setAttribute("aria-hidden", "true");
+
+
+                        ed.setAttribute("data-toggle", "modal");
+                        ed.setAttribute("data-target", "#myModal2");
+                        ed.setAttribute("title", "Edit");
+                        ed.setAttribute("onclick", "load_product_category("+data.Id+")");
+                        ed.appendChild(aed);
+
+                        del.setAttribute("data-toggle", "modal");
+                        del.setAttribute("data-target", "#myModal1");
+                        del.setAttribute("title", "Uuń");
+                        del.setAttribute("onclick", "delete_product_category(" + data.Id + ")");
+                        del.appendChild(adel);
+
+                        tde.appendChild(ed);
+                        tde.appendChild(del);
+                        tde.setAttribute("class", "list-btn");
+
+                        td.innerText = $('#modal-ProductCategory-name').val();
+                        tr.setAttribute("id", "productCategory-" + data.Id);
+                        tr.appendChild(td);
+                        tr.appendChild(tde);
+                        $('#ProductCategoriesTable').append(tr);
+                        $('#modal-ProductCategory-name').val("");
+                        toastr.success("Kategorie Produktów","Dodano");
+                    }
+                    if (data == "Error") {
+                        $('#modal-ProductCategory-name').val("");
+                        toastr.error("", "Błąd");
+
+                    }
+                }
+            });
+        });
+    });
+    function load_product_category(id) {
+        $('#modal-Edit-ProductCategory-id').val(id);
+        $('#modal-Edit-ProductCategory-name').val($("#productCategory-" + id + " td:first").text().trim());
+    }
+     $(function () {
+        $('#EditProductCategory').click(function () {
+            jQuery.ajax({
+                type: "POST",
+                url: "@Url.Action("Edit", "ProductCategories", null, Request.Url.Scheme, null)",
+                data: {
+                    'Id': $('#modal-Edit-ProductCategory-id').val(),
+                    'CategoryName': $('#modal-Edit-ProductCategory-name').val(),
+                },
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": true,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (data.text == "Added") {
+                        $('#productCategory-' + $('#modal-Edit-ProductCategory-id').val()).children(":first").html(data.Name);
+                        $('#modal-Edit-ProductCategory-name').val("");
+                        $('#modal-Edit-ProductCategory-id').val("");
+                        toastr.success("Kategorie Produktów","Dodano");
+                    }
+                    if (data == "Error") {
+                        $('#modal-Edit-ProductCategory-name').val("");
+                        $('#modal-Edit-ProductCategory-id').val("");
+                        toastr.error("", "Błąd");
+
+                    }
+                }
+            });
+        });
+    });
+    function delete_product_category(id) {
+    $('#modal-CV-delete-confirmed').attr('onClick', 'delete_productcategory_confirm('+id+')');
+    }
+    function delete_productcategory_confirm(id) {
+        jQuery.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete", "ProductCategories", null, Request.Url.Scheme, null)",
+                data: {
+                    'id': id
+                },
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": true,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (data == "Deleted") {
+                        $('#productCategory-' + id).remove();
+                        toastr.success("", "Usunięto");
+                    }
+                    if (data == "Error") {
+                        toastr.error("", "Błąd");
+                    }
+                }
+        });
+        $('#modal-CV-delete-confirmed').attr('onClick', '');
+    }
+</script>

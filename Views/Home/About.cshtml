@@ -1,0 +1,93 @@
+﻿@model MyWebsite.Models.CV.CV
+@{
+    ViewBag.Title = "Curriculum Vitae";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="site-title text-center">
+                <h2>@ViewBag.Title</h2>
+                <div class="breadcrumb-site-title">
+                    <ul class="breadcrumb">
+                        <li><a href="@Url.Action( "Index", "Home")">Strona domowa</a></li>
+                        <li>@ViewBag.Title</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class=" col-12 col-md-3 mtb-25">
+            <div class="team">
+                <img src="~/Images/CV/@Model.Photo">
+
+            </div>
+        </div>
+        <div class="col-12 col-md-9 mtb-25">
+            <h2>@Html.DisplayFor(model => model.ForName) @Html.DisplayFor(model => model.SurName)</h2>
+            <p>@Html.DisplayFor(model => model.Description)</p>
+        </div>
+        <div class=" col-12 mtb-25 CV-School">
+            <h3>Wykształcenie</h3>
+            <div class="sep-double "></div>
+            @foreach (var item in Model.School.OrderBy(x => x.DateStart).ToList())
+        {
+            <div class="row CV-School-single">
+                <div class="col-12 col-md-3">@item.DateStart.ToString().Substring(3, 7) - @item.DateEnd.ToString().Substring(3, 7) </div><div class="col-12 col-md-9">@item.Name</div>
+                <div class="col-12 col-md-9 offset-md-3 mb-25">
+                    Profil / Kierunek: @item.Profile @if (item.TitleOfThesis != null)
+                {<p>Temat pracy dyplomowej: @item.TitleOfThesis</p>}
+                </div>
+
+            </div>
+    }
+        </div>
+        <div class=" col-12 mtb-25 CV-Job">
+            <h3>Doświadczenie</h3>
+            <div class="sep-double "></div>
+            @foreach (var item in Model.Jobs)
+        {
+            <div class="row CV-School-single">
+                <div class="col-12 col-md-3">@item.DataStart.ToString().Substring(3, 7) - @item.DateEnd.ToString().Substring(3, 7) </div><div class="col-12 col-md-9">@item.CompanyName</div>
+                <div class="col-9 offset-3">Stanowisko: @item.Stand</div>
+
+            </div>
+    }
+        </div>
+        <div class=" col-12 mtb-25 CV-Skill">
+            <h3>Umiejętności</h3>
+            <div class="sep-double "></div>
+            @foreach (var item in Model.Skill)
+        {
+            <div class="row CV-School-single">
+                <div class="col-9 offset-3">@item.Name</div>
+            </div>
+    }
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-6">
+            <div class="features ">
+                <h3>Jesteś zainteresowany współpracą</h3>
+                <br>
+                <br>
+                <p>
+                    Przejdz do formularza kontaktowego i napisz.
+                </p>
+                <div class="row">
+                    <div class="col-12 mt-4">
+                        <a class="mybtn btn-primary btn-lg go-to" href="@Url.Action( "Contact", "Home")" role="button">
+                            Kontakt
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 mb-50">
+            <div class="features-img waypoint animated fadeInLeft" data-class="animated fadeInLeft">
+                <img src="~/Images/kontakt.png">
+            </div>
+        </div>
+    </div>
+</div>

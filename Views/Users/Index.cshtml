@@ -1,0 +1,111 @@
+﻿@model IEnumerable<MyWebsite.Models.User>
+
+@{
+    ViewBag.Title = "Index";
+}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-3 no-padding-left-right">
+            @{Html.RenderAction("Menu", "Admin");}
+        </div>
+        <div class="col-xs-9">
+            <h2>Kontakty</h2>
+
+            <div class="row">
+                <div class="col-xs-12 col-md-6 pull-right">
+                    <table class="table">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a onclick="load_user(@item.Id)">
+                                        <div class="user-chip">
+                                            @if (item.Photo == null)
+                                            {
+                                                <img src="~/Images/Admin/User.jpg" alt="Person" width="96" height="96">
+                                            }
+                                            else
+                                            {
+                                                <img src="~/Images/User/@item.Photo" alt="Person" width="96" height="96">
+                                            }
+                                            @if (item.ForName != null || item.SurName != null)
+                                            {
+                                                <span style="margin-right:10px">@item.ForName</span><span>@item.SurName</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@item.Email</span>
+                                            }
+                                        </div>
+                                    </a>
+                                </td>
+
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <div class="col-xs-12 col-md-6 pull-left">
+                    <div class="user-profile-card">
+                        <img id="user-profile-card-photo" src="/Images/Admin/User.jpg" alt="John" style="width:100%">
+                        <h1 id="user-profile-card-forname">Imię</h1>
+                        <h1 id="user-profile-card-surname">Nazwisko</h1>
+                        <p><a id="user-profile-card-mail">Mail</a></p>
+                        <p><a id="user-profile-card-phone">Telefon</a></p>
+                        <a id="user-profile-card-snapchat"><i class="fa fa-snapchat-square"></i></a>
+                        <a id="user-profile-card-twitter"><i class="fa fa-twitter-square"></i></a>
+                        <a id="user-profile-card-gp"><i class="fa fa-google-plus-square"></i></a>
+                        <a id="user-profile-card-facebook"><i class="fa fa-facebook-square"></i></a>
+                        <p><a id="user-profile-card-button" class="user-profile-card-button"><i class="fa fa-comments" style="padding-right:5px"></i>Rozpocznij Chat</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function load_user(id) {
+        jQuery.ajax({
+                type: "Post",
+                url: "@Url.Action("Detail", "Users", null, Request.Url.Scheme, null)",
+                data: {
+                    'id': id
+                },
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    if (data != "Error") {
+                        $('#user-profile-card-forname').text(data.ForName);
+                        $('#user-profile-card-surname').text(data.SurName);
+                        $('#user-profile-card-mail').text(data.Email);
+                        $('#user-profile-card-mail').attr("href","mailto:"+data.Email);
+                        $('#user-profile-card-phone').text(data.Phone);
+                        $('#user-profile-card-phone').attr("href", "tel:" + data.Phone);
+                        $('#user-profile-card-button').attr("href", "@Url.Action("Create", "Chat", null, Request.Url.Scheme, null)"+"/"+data.Id);
+
+                        if (data.Photo != null) {
+                            $('#user-profile-card-photo').attr("src", "/Images/User/" + data.Photo);
+                        } else {
+                            $('#user-profile-card-photo').attr("src", "/Images/Admin/User.jpg");
+                        }
+                    } else {
+                        toastr.options = {
+                            "closeButton": true,
+                            "debug": false,
+                            "newestOnTop": true,
+                            "positionClass": "toast-bottom-right",
+                            "preventDuplicates": true,
+                            "showDuration": "300",
+                            "hideDuration": "1000",
+                            "timeOut": "5000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+                        toastr.error("podczas ładowania danych", "Błąd");
+                    }
+                }
+            });
+    };
+</script>

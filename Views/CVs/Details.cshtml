@@ -1,0 +1,390 @@
+﻿@model MyWebsite.Models.CV.CV
+
+@{
+    ViewBag.Title = "Szczegóły";
+}
+
+<div class="container">
+    <div class="row">
+        @{Html.RenderAction("Menu", "Admin");}
+
+        <div class="col-12 pl-50px">
+            <div>
+                <h4 class="float-left">CV</h4>
+
+                <div class="float-right">
+                    <a href="@Url.Action("Edit","CVs",new { id=1})" class="btn btn-default list-btn-rounded pull-right" style="margin-right:0px"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Photo)
+                </dt>
+
+                <dd>
+                    <img src="~/Images/CV/@Model.Photo" class="img-thumbnail" style="max-height:200px" />
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ForName)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.ForName)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.SurName)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.SurName)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Description)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Description)
+                </dd>
+                <dt class="mtb-25">
+                    Wykształcenie
+                    <a data-toggle="modal" data-target="#CVSchool-add" title="Szczegóły" class="CV-add float-right">+</a>
+                </dt>
+                <dd id="CV-Schools">
+                    @foreach (var item in Model.School)
+                    {
+                        <div id="CV-School-single-@item.Id" class="row CV-School-single">
+                            <div class="col-12 col-md-3"><p style="margin-bottom:0px">@item.DateStart.ToString().Substring(3, 7) - @item.DateEnd.ToString().Substring(3, 7)</p></div>
+                            <div class="col-12 col-md-9"><p style="margin-bottom:0px">@item.Name</p></div>
+                            <div class="col-12 col-md-9 offset-md-3 mb-25">
+                                <p style="margin-bottom:0px">Profil / Kierunek: @item.Profile</p>
+                                @if (item.TitleOfThesis != null)
+                                {
+                                    <p class="float-left" style="margin-bottom:0px">Temat pracy dyplomowej: @item.TitleOfThesis</p>
+                                }
+                                <a data-toggle="modal" data-target="#myModal1" class="float-right " onclick="delete_school(@item.Id)"><i class="fa fa-trash list-delete-btn" style="margin:0px"></i></a>
+                                <a data-toggle="modal" data-target="#CVSchool-edit" class="float-right " onclick="load_school(@item.Id)"><i class="fa fa-pencil list-edit-btn" style="margin:0px"></i></a>
+                            </div>
+                        </div>
+
+                    }
+                </dd>
+                <dt class="mtb-25">
+                    Doświadczenie
+                    <a data-toggle="modal" data-target="#CVJob-add" title="Szczegóły" class="CV-add float-right">+</a>
+                </dt>
+                <dd id="CV-Jobs">
+                    @foreach (var item in Model.Jobs)
+                    {
+                        <div id="CV-Job-single-@item.Id" class="row CV-Job-single">
+                            <div class="col-12 col-md-3"><p style="margin-bottom:0px">@item.DataStart.ToString().Substring(3, 7) - @item.DateEnd.ToString().Substring(3, 7)</p></div>
+                            <div class="col-12 col-md-9"><p style="margin-bottom:0px">@item.CompanyName</p></div>
+                            <div class="col-12 col-md-9 offset-md-3 mb-25">
+                                <p class="float-left" style="margin-bottom:0px"> Stanowisko: @item.Stand</p>
+                                <a data-toggle="modal" data-target="#CVJob-edit" class="float-right "><i class="fa fa-pencil list-edit-btn" style="margin:0px"></i></a>
+                                <a data-toggle="modal" data-target="#myModal1" class="float-right " onclick="delete_job(@item.Id)"><i class="fa fa-trash list-delete-btn" style="margin:0px"></i></a>
+                            </div>
+                        </div>
+                    }
+                </dd>
+                <dt class="mtb-25">
+                    Umiejętności
+                    <a data-toggle="modal" data-target="#CVSkill-add" title="Szczegóły" class="CV-add float-right">+</a>
+                </dt>
+
+                <dd id="CV-Skills">
+                    @foreach (var item in Model.Skill)
+                    {
+
+                        <div id="CV-Skill-single-@item.Id" class="row CV-Job-single">
+
+                            <div class="col-12 col-md-9 offset-md-3 mb-25">
+                                <p class="float-left" style="margin-bottom:0px">@item.Name</p>
+                                <a data-toggle="modal" data-target="#CVSkill-edit" class="float-right "><i class="fa fa-pencil list-edit-btn" style="margin:0px"></i></a>
+                                <a data-toggle="modal" data-target="#myModal1" class="float-right " onclick="delete_skill(@item.Id)"><i class="fa fa-trash list-delete-btn" style="margin:0px"></i></a>
+                            </div>
+                        </div>
+                    }
+                </dd>
+            </dl>
+            <p>
+                @Html.ActionLink("Edytuj", "Edit", new { id = 1 })
+            </p>
+        </div>
+
+    </div>
+</div>
+<div id="CVSchool-add" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dodaj Wykształcenie</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="control-label">Nazwa Szkoły / Uczelni / Kursu:</p>
+                    <input class="form-control" type="text" id="modal-School-name" />
+                    <p class="control-label">Nazwa Kierunku / Profilu:</p>
+                    <input class="form-control" type="text" id="modal-Profile-name" />
+                    <p class="control-label">Tytuł pracy dyplomowej:</p>
+                    <input class="form-control" type="text" id="modal-TitleOfThesis" />
+                    <p class="control-label">Data Rozpoczęcia:</p>
+                    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                        <input id="modal-School-DataStart" type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1" />
+                        <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    <p class="control-label">Data Zakończenia:</p>
+                    <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+                        <input id="modal-School-DataEnd" type="text" class="form-control datetimepicker-input" data-target="#datetimepicker2" />
+                        <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div>
+                    <p id="modal-pagecontact-text" class="text-justify" style="width:100%"></p>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="AddCvSchool" class="btn btn-default btn-success float-left" data-dismiss="modal">Dodaj</button>
+                <button type="button" class="btn btn-default btn-danger float-right" data-dismiss="modal">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="CVJob-add" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dodaj Doświadczenie</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="control-label">Nazwa Firmy:</p>
+                    <input class="form-control" type="text" id="modal-Company-name" />
+                    <p class="control-label">Nazwa Stanowiska:</p>
+                    <input class="form-control" type="text" id="modal-Stand-name" />
+                    <p class="control-label">Data Rozpoczęcia:</p>
+                    <div class="input-group date" id="datetimepicker3" data-target-input="nearest">
+                        <input id="modal-Job-DataStart" type="text" class="form-control datetimepicker-input" data-target="#datetimepicker3" />
+                        <div class="input-group-append" data-target="#datetimepicker3" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    <p class="control-label">Data Zakończenia:</p>
+                    <div class="input-group date" id="datetimepicker4" data-target-input="nearest">
+                        <input id="modal-Job-DataEnd" type="text" class="form-control datetimepicker-input" data-target="#datetimepicker4" />
+                        <div class="input-group-append" data-target="#datetimepicker4" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div>
+                    <p id="modal-pagecontact-text" class="text-justify" style="width:100%"></p>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="AddCvJob" class="btn btn-default btn-success float-left" data-dismiss="modal">Dodaj</button>
+                <button type="button" class="btn btn-default btn-danger float-right" data-dismiss="modal">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="CVSkill-add" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dodaj Umiejętność</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="control-label">Nazwa Umiejętności:</p>
+                    <input class="form-control" type="text" id="modal-Skill-name" />
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="AddCvSkill" type="button" class="btn btn-default btn-success float-left" data-dismiss="modal">Dodaj</button>
+                <button type="button" class="btn btn-default btn-danger float-right" data-dismiss="modal">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModal1" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Element CV</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Czy na pewno chcesz usunąć ten element?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-CV-delete-confirmed" type="button" class="btn btn-default btn-success pull-left" data-dismiss="modal">Tak</button>
+                <button type="button" class="btn btn-default btn-danger pull-left" data-dismiss="modal">Nie</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="CVSchool-edit" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dodaj Wykształcenie</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="control-label">Nazwa Szkoły / Uczelni / Kursu:</p>
+                    <input class="form-control" type="text" id="edit-modal-School-name" />
+                    <p class="control-label">Nazwa Kierunku / Profilu:</p>
+                    <input class="form-control" type="text" id="edit-modal-Profile-name" />
+                    <p class="control-label">Tytuł pracy dyplomowej:</p>
+                    <input class="form-control" type="text" id="edit-modal-TitleOfThesis" />
+                    <p class="control-label">Data Rozpoczęcia:</p>
+                    <div class="input-group date" id="datetimepicker5" data-target-input="nearest">
+                        <input id="edit-modal-School-DataStart" type="text" class="form-control datetimepicker-input" data-target="#datetimepicker5" />
+                        <div class="input-group-append" data-target="#datetimepicker5" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    <p class="control-label">Data Zakończenia:</p>
+                    <div class="input-group date" id="datetimepicker6" data-target-input="nearest">
+                        <input id="edit-modal-School-DataEnd" type="text" class="form-control datetimepicker-input" data-target="#datetimepicker6" />
+                        <div class="input-group-append" data-target="#datetimepicker6" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="EditCvSchool" class="btn btn-default btn-success float-left" data-dismiss="modal">Zapisz</button>
+                <button type="button" class="btn btn-default btn-danger float-right" data-dismiss="modal">Anuluj</button>
+            </div>
+            <script type="text/javascript">
+                function load_school(id) {
+                    jQuery.ajax({
+                        type: "POST",
+                        url: "GetSchool",
+                        data: {
+                            'id': id
+                        },
+                        async: true,
+                        dataType: "json",
+                        success: function (data) {
+                            toastr.options = {
+                                "closeButton": true,
+                                "debug": false,
+                                "newestOnTop": true,
+                                "positionClass": "toast-bottom-right",
+                                "preventDuplicates": true,
+                                "showDuration": "300",
+                                "hideDuration": "1000",
+                                "timeOut": "5000",
+                                "extendedTimeOut": "1000",
+                                "showEasing": "swing",
+                                "hideEasing": "linear",
+                                "showMethod": "fadeIn",
+                                "hideMethod": "fadeOut"
+                            }
+                            if (data != "Error") {
+                                $('#edit-modal-School-name').val(data.Name);
+                                $('#edit-modal-Profile-name').val(data.Profile);
+                                $('#edit-modal-TitleOfThesis').val(data.TitleOfThesis);
+                                var Ds = new Date(parseInt(data.DateStart.replace("/Date(", "").replace(")/", "")));
+                                var De = new Date(parseInt(data.DateEnd.replace("/Date(", "").replace(")/", "")));
+                                var Dsd = Ds.getDate() + "." + Ds.getMonth() + "." + Ds.getFullYear();
+                                var Ded = De.getDate() + "." + De.getMonth() + "." + De.getFullYear();
+                                $('#edit-modal-School-DataStart').val(Dsd);
+                                $('#edit-modal-School-DataEnd').val(Ded);
+                                $('#EditCvSchool').attr('onClick', '');
+                            }
+                            else {
+                                toastr.error("", "Błąd");
+                            }
+                        }
+                    });
+
+                }
+            </script>
+        </div>
+    </div>
+</div>
+<div id="CVJob-edit" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dodaj Doświadczenie</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="control-label">Nazwa Firmy:</p>
+                    <input class="form-control" type="text" id="modal-Company-name" />
+                    <p class="control-label">Nazwa Stanowiska:</p>
+                    <input class="form-control" type="text" id="modal-Stand-name" />
+                    <p class="control-label">Data Rozpoczęcia:</p>
+                    <div class="input-group date" id="datetimepicker3" data-target-input="nearest">
+                        <input id="modal-Job-DataStart" type="text" class="form-control datetimepicker-input" data-target="#datetimepicker3" />
+                        <div class="input-group-append" data-target="#datetimepicker3" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    <p class="control-label">Data Zakończenia:</p>
+                    <div class="input-group date" id="datetimepicker4" data-target-input="nearest">
+                        <input id="modal-Job-DataEnd" type="text" class="form-control datetimepicker-input" data-target="#datetimepicker4" />
+                        <div class="input-group-append" data-target="#datetimepicker4" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div>
+                    <p id="modal-pagecontact-text" class="text-justify" style="width:100%"></p>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="AddCvJob" class="btn btn-default btn-success float-left" data-dismiss="modal">Dodaj</button>
+                <button type="button" class="btn btn-default btn-danger float-right" data-dismiss="modal">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="CVSkill-edit" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dodaj Umiejętność</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="control-label">Nazwa Umiejętności:</p>
+                    <input class="form-control" type="text" id="modal-Skill-name" />
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="AddCvSkill" type="button" class="btn btn-default btn-success float-left" data-dismiss="modal">Dodaj</button>
+                <button type="button" class="btn btn-default btn-danger float-right" data-dismiss="modal">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+@Scripts.Render("~/Scripts/Sites/CVs/Details.js")

@@ -1,0 +1,105 @@
+﻿@using MyWebsite.Models
+@model LoginViewModel
+@{
+    ViewBag.Title = "Zaloguj";
+}
+<div class="container-fluid admin-login">
+    <div class="row">
+        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = Url.Action("Index","Admin") }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+        @Html.AntiForgeryToken()
+        <div class="col-8 offset-2  admin-login-div text-center animated bounceInLeft">
+            <img src="~/Images/Admin/user.jpg" id="admin-login-img" class="img-fluid" style="max-width:200px"></img>
+            <h2>Zaloguj sie</h2>
+            <h5>do panelu administratora</h5>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div id="admin-login-email">
+                @*<input type="emial" placeholder="Adres e-mail" id="admin-input-email1" class="form-control mt-4" />*@
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @id = "admin-input-email1", @placeholder = "Adres e-mail" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+
+                <input type="button" id="admin-input-next" class="admin-login-next float-right btn btn-default btn-primary" value="Dalej" onclick="email()">
+            </div>
+            <div id="admin-login-pass" class="admin-login-pass">
+                @*<input type="password" placeholder="Wpisz hasło" class="form-control mt-2" id="admin-login-passwd">*@
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control mt-2", @id = "admin-login-passwd", @placeholder = "Wpisz hasło" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+
+                <div class="float-left mt-4">
+                    @Html.ActionLink("Nie pamiętasz hasła?", "ForgotPassword","Account")
+                </div>
+                <div class="float-right">
+                    <input type="submit" value="Dalej" class="admin-login-btn btn btn-default btn-primary" id="admin-login-btn">
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+<style>
+
+    .admin-login-pass {
+        display: none;
+    }
+
+    .admin-login-btn {
+        width: auto;
+        margin: 20px 0px;
+    }
+
+    .admin-login {
+        background-image: linear-gradient( #fff 10%, #777777 40%, #fff 99%);
+        height: 100vh;
+        position: relative;
+    }
+
+    .admin-login-div {
+        background-color: #fff;
+        border-radius: 15px;
+        margin: 0;
+        position: absolute;
+        top: 40%;
+        left: 15%;
+        transform: translate(-50%, -50%);
+    }
+
+        .admin-login-div img {
+            position: relative;
+            top: -45px;
+            border-radius: 50%;
+            border: 4px solid #007bff;
+            height: 90px;
+            width: 90px;
+            margin-bottom: -25px;
+        }
+
+    .admin-login-next {
+        width: auto;
+        margin: 20px 0px;
+    }
+</style>
+<script type="text/javascript">
+    function email() {
+        var email = $('#admin-input-email1').val();
+        jQuery.ajax({
+            type: "GET",
+            url: @Url.Action("Photo","Users")+"?email=" + $('#admin-input-email1').val(),
+            data: {},
+            async: true,
+            dataType: "json",
+            success: function (data) {
+                if (data != "Error") {
+                    $('#admin-login-img').attr("src", @Server.MapPath("~/Images/User/") + data);
+                    $('#admin-input-next').hide();
+                    $('#admin-input-email1').prop("readonly", "true");
+                    $('#admin-login-pass').show();
+                    $('#admin-input-email1').val(email);
+                }
+            }
+        });
+    };
+
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,45 @@
+﻿@model IEnumerable<MyWebsite.Models.Chat_Room>
+
+@{
+    ViewBag.Title = "Wiadomości";
+}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-3 no-padding-left-right">
+            @{Html.RenderAction("Menu", "Admin");}
+        </div>
+        <div class="col-9">
+            <h2>Wiadomości</h2>
+
+            <p>
+                @Html.ActionLink("Rozpocznij nową konwersację", "Create")
+            </p>
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.LastUpdate)
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (item.Users.Count == 2)
+                            {
+                                @Html.ActionLink(item.Users.Single(s => s.User.Email != User.Identity.Name).User.ForName + " " + @item.Users.Single(s => s.User.Email != User.Identity.Name).User.SurName, "Details", new { id = item.ID })
+                            }
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edytuj", "Edit", new { id = item.ID }) |
+                            @Html.ActionLink("Archiwizuj", "Delete", new { id = item.ID })
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,12 @@
+﻿@model IEnumerable<MyWebsite.Models.ProductsCategory>
+<div class="col-12 articles-categories-list">
+    <p>Kategoie</p>
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li>
+                @Html.RouteLink(item.CategoryName.ToUpper(), "ArticlesCat", new { cat = item.CategoryName })
+            </li>
+        }
+    </ul>
+</div>

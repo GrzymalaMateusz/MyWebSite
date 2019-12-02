@@ -1,0 +1,57 @@
+﻿@model IEnumerable<MyWebsite.Models.Portfolio>
+
+@{
+    ViewBag.Title = "Portfolio";
+}
+<div class="container">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="site-title text-center">
+                <h2>@ViewBag.Title</h2>
+                <div class="breadcrumb-site-title">
+                    <ul class="breadcrumb">
+                        <li><a href="@Url.Action( "Index", "Home")">Strona domowa</a></li>
+                        <li>@ViewBag.Title</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        @foreach (var item in Model)
+    {
+        <div class="col-md-6 col-lg-4">
+            <a class="portfolio-item d-block mx-auto" data-toggle="modal" data-target="#portfolio-modal-@item.Id">
+                <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
+                    <div class="portfolio-item-caption-content my-auto w-100 text-center text-white">
+                        <i class="fa fa-search-plus"></i>
+                    </div>
+                </div>
+                <img class="img-fluid" src="~/Images/Portfolio/@item.Photo" alt="">
+            </a>
+        </div>
+        <div id="portfolio-modal-@item.Id" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-dialog-portfolio">
+                <div class="modal-content modal-content-portfolio">
+                    <div class="modal-body">
+                        <div>
+                            <button type="button" class="close float-right" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title" style="text-align:center!important">@item.Name</h4>
+                            <hr />
+                            <div class="text-center">
+                                <img class="img-fluid mb-5 text-center" src="~/Images/Portfolio/@item.Photo" alt="">
+                            </div>
+                            <p class="text-justify" style="width:100%">Zakres prac: @item.WorkRange</p>
+                            <p class="text-justify" style="width:100%">@item.Description</p>
+                        </div>
+                        <div class="mt-5 text-center">
+                            <button type="button" class="btn btn-default btn-primary btn-lg" data-dismiss="modal">Zamknij</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+}
+    </div>
+
+</div>

@@ -1,0 +1,47 @@
+﻿@model MyWebsite.Models.Portfolio
+
+@{
+    ViewBag.Title = Model.Name;
+}
+<div class="container">
+    <div class="row">
+            @{Html.RenderAction("Menu", "Admin");}
+        <div class="col-12 pl-50px">
+
+            <div>
+                <h4>@Html.DisplayFor(model => model.Name)</h4>
+                <hr />
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Photo)
+                    </dt>
+
+                    <dd>
+                        <img src="~/Images/Portfolio/@Model.Photo" class="img-fluid"/>
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Description)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Description)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.WorkRange)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.WorkRange)
+                    </dd>
+
+                </dl>
+            </div>
+            <div class="col-12 text-center">
+                <p>
+                    <a href="@Url.Action("Edit","Portfolios",new { id=Model.Id})" class="btn btn-default btn-outline-info">Edytuj</a>
+                    <a href="@Url.Action("Index")" class="btn btn-default btn-outline-info">Wróć do listy</a>
+                </p>
+            </div>
+            </div>
+</div>
+</div>

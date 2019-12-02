@@ -1,0 +1,20 @@
+﻿@model IEnumerable<MyWebsite.Models.Article>
+@using System.Text.RegularExpressions
+
+<div class="hidden-xs hidden-sm col-md-12 articles-popular">
+    <p>Popularne Artykuły</p>
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li>
+                <a href="@Url.Action("Article", "Articles", new {id=item.Id, titl = Regex.Replace(@item.Title,"([^a-zA-Zą-ź0-9 ])","").Replace(" ","-")})">
+                    <div class="articles-popular-img">
+                        <img class="img-fluid" src="/Images/Article/@item.Thumb">
+                    </div>
+                    
+                    <p>@item.Title</p>
+                </a>
+            </li>
+        }
+    </ul>
+</div>

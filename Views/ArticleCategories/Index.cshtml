@@ -1,0 +1,274 @@
+﻿@model IEnumerable<MyWebsite.Models.ArticleCategory>
+
+@{
+    ViewBag.Title = "Index";
+}
+<div class="container">
+    <div class="row">
+            @{Html.RenderAction("Menu", "Admin");}
+
+        <div class="col-12 pl-50px">
+            <h2 class="pull-left">Kategorie artykułów</h2>
+
+            <div class="pull-right">
+                <a href="@Url.Action("Index","Articles")" class="btn btn-default list-btn-rounded pull-right"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+                <a data-toggle="modal" data-target="#myModal" class="btn btn-default list-btn-rounded pull-right"><i class="fa fa-plus" aria-hidden="true"></i></a>
+            </div>
+            <table id="ArticleCategoriesTable" class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CategoryName)
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr id="articleCategory-@item.Id">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CategoryName)
+                        </td>
+                        <td class="list-btn">
+                            <a data-toggle="modal" data-target="#myModal2" title="Edit" onclick="load_article_category(@item.Id)"><i class="fa fa-pencil list-edit-btn " aria-hidden="true"></i></a>
+                            <a data-toggle="modal" data-target="#myModal1" title="Usuń" onclick="delete_article_category(@item.Id)"><i class="fa fa-trash list-delete-btn" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dodaj Kategorię Artykułów</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="clear_add_article_category()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="control-label">Nazwa Kategorii:</p>
+                    <input class="form-control" type="text" id="modal-ArticleCategory-name" />
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="AddArticleCategory" type="button" class="btn btn-default btn-success float-left" data-dismiss="modal">Dodaj</button>
+                <button type="button" class="btn btn-default btn-danger float-right" data-dismiss="modal" onclick="clear_add_article_category()">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModal2" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dodaj Kategorię Artykułów</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="clear_edit_article_category()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <input hidden class="form-control" type="text" id="modal-Edit-ArticleCategory-id" />
+                    <p class="control-label">Nazwa Kategorii:</p>
+                    <input class="form-control" type="text" id="modal-Edit-ArticleCategory-name" />
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="EditArticleCategory" type="button" class="btn btn-default btn-success float-left" data-dismiss="modal">Dodaj</button>
+                <button type="button" class="btn btn-default btn-danger float-right" data-dismiss="modal"  onclick="clear_edit_article_category()">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModal1" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Usuń</h4>
+                <button type="button" class="close" data-dismiss="modal"  onclick="clear_del_article_category()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Czy na pewno chcesz usunąć ten element?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-delete-confirmed" type="button" class="btn btn-default btn-success pull-left" data-dismiss="modal">Tak</button>
+                <button type="button" class="btn btn-default btn-danger pull-left" data-dismiss="modal" onclick="clear_del_article_category()">Nie</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function clear_edit_article_category() {
+        $('#modal-Edit-ArticleCategory-id').val("");
+        $('#modal-Edit-ArticleCategory-name').val("");
+    }
+    function clear_add_article_category() {
+        $('#modal-ArticleCategory-name').val("");
+    }
+    function clear_del_article_category() {
+        $('#modal-delete-confirmed').attr('onClick', '');
+    }
+    $(function () {
+        $('#AddArticleCategory').click(function () {
+            jQuery.ajax({
+                type: "POST",
+                url: "@Url.Action("Create", "ArticleCategories", null, Request.Url.Scheme, null)",
+                data: {
+                    'CategoryName': $('#modal-ArticleCategory-name').val(),
+                },
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": true,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (data.text == "Added") {
+
+                        var tr = document.createElement("tr");
+                        var td = document.createElement("td");
+                        var tde = document.createElement("td");
+
+                        var ed = document.createElement("a");
+                        var del = document.createElement("a");
+
+                        var aed = document.createElement("i");
+                        var adel = document.createElement("i");
+                        aed.setAttribute("class", "fa fa-pencil list-edit-btn");
+                        aed.setAttribute("aria-hidden", "true");
+                        adel.setAttribute("class", "fa fa-trash list-delete-btn");
+                        adel.setAttribute("aria-hidden", "true");
+
+
+                        ed.setAttribute("data-toggle", "modal");
+                        ed.setAttribute("data-target", "#myModal2");
+                        ed.setAttribute("title", "Edit");
+                        ed.setAttribute("onclick", "load_article_category("+data.Id+")");
+                        ed.appendChild(aed);
+
+                        del.setAttribute("data-toggle", "modal");
+                        del.setAttribute("data-target", "#myModal1");
+                        del.setAttribute("title", "Uuń");
+                        del.setAttribute("onclick", "delete_article_category(" + data.Id + ")");
+                        del.appendChild(adel);
+
+                        tde.appendChild(ed);
+                        tde.appendChild(del);
+                        tde.setAttribute("class", "list-btn");
+                        td.innerText = $('#modal-ArticleCategory-name').val();
+                        tr.setAttribute("id", "articleCategory-" + data.Id);
+                        tr.appendChild(td);
+                        tr.appendChild(tde);
+                        $('#ArticleCategoriesTable').append(tr);
+                        $('#modal-ArticleCategory-name').val("");
+                        toastr.success("Kategorie Artykułów","Dodano");
+                    }
+                    if (data == "Error") {
+                        $('#modal-ArticleCategory-name').val("");
+                        toastr.error("", "Błąd");
+
+                    }
+                }
+            });
+        });
+    });
+    function load_article_category(id) {
+        $('#modal-Edit-ArticleCategory-id').val(id);
+        $('#modal-Edit-ArticleCategory-name').val($("#articleCategory-" + id + " td:first").text().trim());
+    }
+     $(function () {
+         $('#EditArticleCategory').click(function () {
+            jQuery.ajax({
+                type: "POST",
+                url: "@Url.Action("Edit", "ArticleCategories", null, Request.Url.Scheme, null)",
+                data: {
+                    'Id': $('#modal-Edit-ArticleCategory-id').val(),
+                    'CategoryName': $('#modal-Edit-ArticleCategory-name').val(),
+                },
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": true,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (data.text == "Added") {
+                        $('#articleCategory-' + $('#modal-Edit-ArticleCategory-id').val()).children(":first").html(data.Name);
+                        $('#modal-Edit-ArticleCategory-name').val("");
+                        $('#modal-Edit-ArticleCategory-id').val("");
+                        toastr.success("Kategorie Artykułów","Dodano");
+                    }
+                    if (data == "Error") {
+                        $('#modal-Edit-ArticleCategory-name').val("");
+                        $('#modal-Edit-ArticleCategory-id').val("");
+                        toastr.error("", "Błąd");
+
+                    }
+                }
+            });
+        });
+    });
+    function delete_article_category(id) {
+    $('#modal-delete-confirmed').attr('onClick', 'delete_articlecategory_confirm('+id+')');
+    }
+    function delete_articlecategory_confirm(id) {
+        jQuery.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete", "ArticleCategories", null, Request.Url.Scheme, null)",
+                data: {
+                    'id': id
+                },
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": true,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (data == "Deleted") {
+                        $('#articleCategory-' + id).remove();
+                        toastr.success("", "Usunięto");
+                    }
+                    if (data == "Error") {
+                        toastr.error("", "Błąd");
+                    }
+                }
+        });
+        $('#modal-delete-confirmed').attr('onClick', '');
+    }
+</script>

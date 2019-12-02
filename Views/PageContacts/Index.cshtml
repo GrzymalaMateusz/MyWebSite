@@ -1,0 +1,235 @@
+﻿@model PagedList.IPagedList<MyWebsite.Models.PageContact>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Wiadomości";
+}
+<div class="container">
+    <div class="row">
+            @{Html.RenderAction("Menu", "Admin");}
+        <div class="col-12 pl-50px">
+            <h2 class="float-left">Wiadomości</h2>
+            <div class="float-right">
+                @using (Html.BeginForm("Index", "PageContacts", FormMethod.Get, new { id = "list-search", @class = "float-right list-search-form", style = "margin-right:0px" }))
+                {
+                    <a id="list-search-submit" class="float-right" onclick="show_input_search()"><i class="fa fa-search list-search-btn" aria-hidden="true"></i></a>
+                    if (ViewBag.CurrentFilter != null)
+                    {
+                        <input id="list-input-search" class="list-search" name="searchString" type="text" style="width:175px" placeholder="Wpisz frazę" value="@ViewBag.CurrentFilter" />
+                    }
+                    else
+                    {
+                        <input id="list-input-search" class="list-search" name="searchString" type="text" style="width:35px" placeholder="Wpisz frazę" />
+                    }
+
+                }
+            </div>
+
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.ActionLink(Html.DisplayNameFor(model => model.FirstOrDefault().Date).ToString(), "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
+                    </th>
+                    <th>
+                        @Html.ActionLink(Html.DisplayNameFor(model => model.FirstOrDefault().Name).ToString(), "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+                    </th>
+                    <th>
+                        @Html.ActionLink(Html.DisplayNameFor(model => model.FirstOrDefault().Mail).ToString(), "Index", new { sortOrder = ViewBag.EmailSortParm, currentFilter = ViewBag.CurrentFilter })
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FirstOrDefault().Phone)
+                    </th>
+
+                    <th></th>
+                </tr>
+               
+                @foreach (var item in Model)
+                {
+                    <tr id="pagecontact-@item.Id" class="list-row">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Date)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Mail)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Phone)
+                        </td>
+
+                        <td class="list-btn">
+                            <a data-toggle="modal" data-target="#myModal" title="Szczegóły" onclick="load_message(@item.Id)"><i class="fa fa-info-circle list-details-btn " aria-hidden="true"></i></a>
+                            <a data-toggle="modal" data-target="#myModal1" title="Usuń" onclick="delete_message(@item.Id)"><i class="fa fa-trash list-delete-btn" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                }
+
+            </table>
+            @if (Model.Count() != 0)
+            {
+                <center>
+                    <p>Strona @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) z @Model.PageCount</p>
+
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+                </center>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <strong>Informacja!</strong> Brak Wiadomości do wyświetlenia.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Wiadomość</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p id="modal-pagecontact-ip" class="pull-left"></p>
+                    <p id="modal-pagecontact-date" class="pull-right"></p>
+                    <br />
+                    <br />
+                    <p class="float-right">
+                        <span id="modal-pagecontact-user-name"></span><br />
+                        <span id="modal-pagecontact-user-phone"></span><br />
+                        <span id="modal-pagecontact-user-mail"></span><br />
+                    </p>
+                </div>
+                <div class="clearfix"></div>
+                <div>
+                    <p id="modal-pagecontact-text" class="text-justify" style="width:100%"></p>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-primary" data-dismiss="modal">Odpowiedz</button>
+                <button type="button" class="btn btn-default btn-primary" data-dismiss="modal">Zamknij</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModal1" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Wiadomość</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Czy na pewno chcesz usunąć tą wiadomość?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-pagecontact-delete-confirmed" type="button" class="btn btn-default btn-success pull-left" data-dismiss="modal">Tak</button>
+                <button type="button" class="btn btn-default btn-danger pull-left" data-dismiss="modal">Nie</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function show_input_search() {
+        if ($('#list-input-search').css("width")=="35px") {
+            $('#list-input-search').animate({ width: "175px" }, {
+                queue: false,
+                duration: 3000
+            });
+        } else {
+            $('#list-search').submit();
+        }
+    }
+    function load_message(id) {
+        jQuery.ajax({
+                type: "Post",
+                url: "@Url.Action("Details", "PageContacts", null, Request.Url.Scheme, null)",
+                data: {
+                    'id': id
+                },
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    if (data != "Error") {
+                        if (data.Ip != null) {
+                            $('#modal-pagecontact-ip').text(data.Ip);
+                        } else {
+                            $('#modal-pagecontact-ip').text("");
+                        }
+                        var d = data.Date.replace("/Date(", "").replace(")/", "");
+                        var a = new Date(d * 1);
+                        var month="";
+                        if (1 + a.getMonth() < 10) {
+                            var month = "0" + (1 + a.getMonth());
+                        } else {
+                            var month = "" + (1 + a.getMonth());
+                        }
+                        var day = "";
+                        if (1 + a.getDate() < 10) {
+                            var day = "0"  + a.getDate();
+                        } else {
+                            var day = "" + a.getDate();
+                        }
+                        var time = day + '.' + month + '.' + a.getFullYear() + '  ' + a.getHours() + ':' + a.getMinutes() + ':' + a.getSeconds();
+                        $('#modal-pagecontact-date').text(time);
+                        $('#modal-pagecontact-text').html(data.Text.replace(/\n/g, '<br>'));
+                        if (data.Ip != null) {
+                            $('#modal-pagecontact-user-mail').html("<a href='mailto:" + data.Mail + "'>" + data.Mail + "</a>");
+                        } else {
+                            $('#modal-pagecontact-user-mail').html("");
+                        }
+                        if (data.Ip != null) {
+                            $('#modal-pagecontact-user-phone').html("<a href='tel:" + data.Phone + "'>" + data.Phone + "</a>");
+                        } else {
+                            $('#modal-pagecontact-user-phone').html("");
+                        }
+                        $('#modal-pagecontact-user-name').text(data.Name);
+                    } else {
+                        $('#modal-pagecontact-text').text("Błąd");
+                    }
+                }
+            });
+    };
+    function delete_message(id) {
+        $('#modal-pagecontact-delete-confirmed').attr('onClick', 'delete_message_confirm('+id+')');
+    }
+    function delete_message_confirm(id) {
+        jQuery.ajax({
+                type: "POST",
+                url: "@Url.Action("Delete", "PageContacts", null, Request.Url.Scheme, null)",
+                data: {
+                    'id': id
+                },
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": true,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (data == "Deleted") {
+                        $('#pagecontact-' + id).remove();
+                        toastr.success("", "Usunięto");
+                    }
+                    if (data == "Error") {
+                        toastr.error("", "Błąd");
+                    }
+                }
+        });
+        $('#modal-pagecontact-delete-confirmed').attr('onClick', '');
+    }
+</script>

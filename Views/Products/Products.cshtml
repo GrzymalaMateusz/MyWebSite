@@ -1,0 +1,119 @@
+﻿@model IEnumerable<MyWebsite.Models.Product>
+@using System.Text.RegularExpressions
+@{
+    ViewBag.Title = "Produkty";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="site-title text-center">
+                <h2>@ViewBag.Title</h2>
+                <div class="breadcrumb-site-title">
+                    <ul class="breadcrumb">
+                        <li><a href="@Url.Action( "Index", "Home")">Strona domowa</a></li>
+                        <li>@ViewBag.Title</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+
+            <div class="row">
+                <div class="col-12 mt-75">
+                    <div class="newsletter-box">
+                        <h2>Newsletter</h2>
+                        <p>Aby być na bieżąco dodaj swój mail do naszej bazy</p>
+                        <div class="input-group" id="NewsletterForm" novalidate="novalidate">
+                            <input id="Newsletter-email" name="Email" class="mail pull-left form-control" placeholder="Adres e-mail" type="text">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default pull-left OkBtn" id="btn-add-to-newsletter"><i class="fa fa-plus"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-9">
+            <div class="row">
+                @if (Model.Count() == 0)
+                {
+                    <div class="col-12 alert alert-info">
+                        <strong>Informacja!</strong> Brak Produktów do wyświetlenia. Zapraszamy wkrótce!
+                    </div>
+                }
+                @foreach (var item in Model)
+                {
+                    <div class="col-12 col-sm-6" style="margin-bottom:50px">
+                        <div class="product_block">
+                            <a class="thumb" href="@Url.Action("Product","Products", new { id = item.Id, titl = Regex.Replace(@item.Name,"([^a-zA-Zą-ź0-9 ])","").Replace(" ","-") })" title="@item.Name">
+                                <img src="~/Images/Product/@item.Thumb" style="height:185px" class="img-fluid" alt="@item.Name">
+                            </a>
+                            <h3>
+                                @Html.ActionLink(item.Name, "Product", new { id = item.Id, titl = Regex.Replace(@item.Name, "([^a-zA-Zą-ź0-9 ])", "").Replace(" ", "-") })
+                            </h3>
+                            <p>@Html.DisplayFor(modelItem => item.ShortDescription)</p>
+                            <div>
+                                <a href="@Url.Action("Product","Products", new { id = item.Id, titl = Regex.Replace(@item.Name,"([^a-zA-Zą-ź0-9 ])","").Replace(" ","-") })" title="@item.Name" class="btn btn-success">
+                                    Więcej
+                                </a>
+                                @if (item.Demo != null)
+                                {
+                                    <a href="@item.Demo" class="btn btn-primary" target="_blank">
+                                        Demo
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#btn-add-to-newsletter').click(function () {
+            // title is optional
+            jQuery.ajax({
+                type: "POST",
+                url: "@Url.Action("Join", "Newsletters", null, Request.Url.Scheme, null)",
+                data: {
+                    'Email': $('#Newsletter-email').val()
+                },
+                async: true,
+                dataType: "json",
+                success: function (data) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": true,
+                        "positionClass": "toast-bottom-right",
+                        "preventDuplicates": true,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (data == "Added") {
+                        $('#Newsletter-email').val("");
+                        toastr.success("Zapisano do subskrypcji", "Newsletter");
+                    }
+                    if (data == "Exist") {
+                        $('#Newsletter-email').val("");
+                        toastr.info("Już subskryujesz", "Newsletter");
+                    }
+                    if (data == "Error") {
+                        $('#Newsletter-email').val("");
+                        toastr.error("Błąd", "Newsletter");
+
+                    }
+                }
+            });
+        });
+    });
+</script>

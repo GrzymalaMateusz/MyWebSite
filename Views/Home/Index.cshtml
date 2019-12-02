@@ -1,0 +1,138 @@
+﻿@{
+    ViewBag.Title = "Strona Główna";
+}
+@using Microsoft.Web.Helpers;
+
+
+<div class="header" style="margin-top: -75px;padding-top:50px; width: 100%; position:relative;background-image: url('../../Images/Header_Background.jpg'); background-repeat: no-repeat;background-size: cover;height: 600px;padding-bottom: 100px;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-md-6 text-right float-right mt-5">
+                <img src="~/Images/header_img.png" class="img-fluid waypoint animated fadeInRight" data-class="animated fadeInRight">
+            </div>
+            <div class="col-12 col-md-6 line-text waypoint mt-75 main-text-sm animated bounceInLeft float-left" data-class="animated bounceInLeft">
+                <h1 class="main-text"></h1>
+                <h3></h3>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<div class="ptb-50">
+    <div class="container">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12 col-sm-3"></div>
+                <div class="col-12 col-sm-6">
+                    <div class="title-white text-center mtb-50">
+                        <h2>Usługi:</h2>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-3"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-sm-4">
+                    <div class="title-small-white waypoint animated fadeInUp" data-class="animated fadeInUp">
+                        <i class=" icon-phone" aria-hidden="true"></i>
+                        <h3>Aplikacje Mobilne</h3>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                    <div class="title-small-white waypoint animated fadeInUp" data-class="animated fadeInUp">
+                        <i class="  icon-global" aria-hidden="true"></i>
+                        <h3>Strony Internetowe</h3>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                    <div class="title-small-white waypoint animated fadeInUp" data-class="animated fadeInUp">
+                        <i class=" icon-tools-2" aria-hidden="true"></i>
+                        <h3>Naprawa Komputerów</h3>
+                        <p></p>
+                    </div>
+                </div>
+                <br><br><br>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ptb-25">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-12 col-sm-12 col-md-6">
+                <div class="features float-left">
+                    <h3>Oprogramowanie podążające za aktualnymi trendami</h3>
+                    <br>
+                    <br>
+                    <p>
+                        Staram się aby tworzone oprogramowanie, było zgodne z standardami oraz by było tworzone na najnowszych wersjach frameworków.
+                    </p>
+
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6">
+                <div class="features-img waypoint animated fadeInLeft" data-class="animated fadeInLeft">
+                    <img src="~/Images/web-standards.png">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ptb-50">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-6  mb-50">
+                <div class="features-img waypoint float-left animated fadeInRight" data-class="animated fadeInRight"><img src="~/Images/About_Section.png"></div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6">
+                <div class="features main-index-text2 float-left">
+                    <h3>O Mnie</h3>
+                    <br> <br>
+                    <p>Nazywam się Mateusz Grzymała, jestem absolwentem Uniwersytetu Przyrodniczo-Humanistycznego w Siedlcach. Od 2014 roku zajmuję się tworzeniem stron internetowych. W poniższym odnośniku znajduje się więcej informacji: </p>
+                    <div class="row">
+                        <div class="col-12 mt-4">
+                            <a class="mybtn btn-primary btn-lg go-to" href="@Url.Action( "About", "Home")" role="button">
+                                O Mnie
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ptb-25">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-6">
+                <div class="features float-left">
+                    <h3>Jesteś zainteresowany współpracą?</h3>
+                    <br>
+                    <br>
+                    <p>
+                        Przejdz do formularza kontaktowego i napisz
+                    </p>
+                    <div class="row">
+                        <div class="col-12 mt-4">
+                            <a class="mybtn btn-primary btn-lg go-to" href="@Url.Action( "Contact", "Home")" role="button">
+                                Kontakt
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 mb-50">
+                <div class="features-img waypoint animated fadeInLeft" data-class="animated fadeInLeft">
+                    <img src="~/Images/kontakt.png">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

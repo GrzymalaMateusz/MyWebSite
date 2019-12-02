@@ -1,0 +1,254 @@
+﻿@model MyWebsite.Models.Article
+
+@{
+    ViewBag.Title = Model.Title;
+}
+<div class="container">
+    <div class="row">
+        @{Html.RenderAction("Menu", "Admin");}
+        <div class="col-12 pl-50px">
+            <div class="row object-info">
+                <div class="col-6 col-md-2">
+                    <p>@Html.DisplayNameFor(model => model.PublishDate)</p>
+                    <center><span>@Html.DisplayFor(model => model.PublishDate)</span></center>
+                </div>
+                <div class="col-6 col-md-2">
+                    <p> @Html.DisplayNameFor(model => model.CreateDate)</p>
+                    <center><span>@Html.DisplayFor(model => model.CreateDate)</span></center>
+                </div>
+                <div class="col-6 col-md-2">
+                    <p>@Html.DisplayNameFor(model => model.ModDate)</p>
+                    <center><span>@Html.DisplayFor(model => model.ModDate)</span></center>
+                </div>
+                <div class="col-6 col-md-2">
+                    <p>@Html.DisplayNameFor(model => model.CreateIp)</p>
+                    <center><span>@Html.DisplayFor(model => model.CreateIp)</span></center>
+                </div>
+                <div class="col-6 col-md-2">
+                    <p>@Html.DisplayNameFor(model => model.ModIp)</p>
+                    <center><span>@Html.DisplayFor(model => model.ModIp)</span></center>
+                </div>
+                <div class="col-6 col-md-2">
+                    <p>@Html.DisplayNameFor(model => model.Views)</p>
+                    <center><span>@Html.DisplayFor(model => model.Views)</span></center>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="article-head-thumb" style="background-image: url('/Images/Article/@Html.DisplayFor(model => model.Thumb)');">
+
+                    </div>
+
+                    <h2 class="article-head-title">
+                        @Html.DisplayFor(model => model.Title)
+                    </h2>
+                    <div>
+                        <p class="article-data">
+                            @if (Model.ShowUser && Model.User != null)
+                            {
+                                <span class="article-user">PRZEZ @Model.User.ForName @Model.User.SurName </span>
+                            }
+                            @if (Model.Category != null)
+                            {
+                                <span>W @Model.Category.CategoryName</span>
+                            }
+                        </p>
+                    </div>
+                    <div class="clearfix"></div>
+                    <p class="article-text">
+                        @if (Model.Text != null)
+                        {
+                            @Html.Raw(Model.Text.Replace("\n", "<br />"))
+                        }
+                    </p>
+                    @if (Model.Tags != null)
+                    {
+                        <ul class="article-tags">
+                            @foreach (string item in Model.Tags.Split(' '))
+                            {
+                                <a href=""><li class="article-tag">@item</li></a>
+                            }
+                        </ul>
+                    }
+                    @if (Model.Photos.Count != 0 || Model.Thumb != null)
+                    {
+
+                        <div id="article-gallery" class="row article-gallery" style="height:auto!important">
+
+                            <div class="col-12">
+                                <h2>Galeria</h2>
+                                <div class="sep-double "></div>
+                            </div>
+
+                            <div class="col-12 col-md-3" style="padding-bottom:15px">
+                                <a class="fancybox" href="~/Images/Article/@Model.Thumb" rel="gallery">
+                                    <div class="article-gallery-hover" style="padding-bottom:30px">
+                                        <img src="/Images/Article/@Model.Thumb" class="img-fluid" style="max-height:150px;border-radius:17px;">
+                                    </div>
+                                </a>
+                            </div>
+                            @foreach (var item in Model.Photos)
+                            {
+                                <div class="col-12 col-md-3" style="padding-bottom:15px">
+                                    <a class="fancybox" href="~/Images/Article/Gallery/@item.Path" rel="gallery">
+                                        <div class="article-gallery-hover" style="padding-bottom:30px">
+                                            <img src="/Images/Article/Gallery/@item.Path" class="img-fluid" style="max-height:150px;border-radius:17px;">
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+
+                        </div>
+
+
+                    }
+                    @if (Model.CommentAloved == true)
+                    {
+                        <div class="row article-comments">
+                            <div class="col-12">
+                                <h2>Komentarze</h2>
+                                <div class="sep-double "></div>
+                            </div>
+                            <div id="article-comments" class="col-12">
+                                @if (Model.Comments.Count == 0)
+                                {
+                                    <div class="alert alert-info">Brak komentarzy!!!</div>
+                                }
+                                else
+                                {
+                                    foreach (var item in Model.Comments.ToList())
+                                    {
+                                        if (item.IsShow == false)
+                                        {
+                                            <div id="article-comment-@item.Id" class="article-comment article-comment-reported-removed">
+                                                @if (item.User != null && item.User.Photo != null)
+                                                {
+                                                    <div style="background-image:url('/Images/User/@item.User.Photo');" class="article-comment-avatar"></div>
+                                                }
+                                                else
+                                                {
+                                                    <div style="background-image:url('/Images/Admin/User.jpg');" class="article-comment-avatar"></div>
+                                                }
+                                                <p>
+                                                    @if (item.Name == null)
+                                                    {
+                                                        <b>@item.User.ForName @item.User.SurName.Substring(0, 1).</b>
+                                                    }
+                                                    else
+                                                    {
+                                                        <b>@item.Name</b>
+                                                    }
+                                                    <span>@item.CreateDate.ToString().Substring(0, 16)</span>
+                                                    @if (item.Reported != true)
+                                                    {
+                                                        <span class="pull-right"><a href="#" title="Zgłoś nadużycie" class="article-comment-report" data-toggle="modal" data-target="#myModal1" onclick="report_comment(@item.Id)">!</a></span>
+                                                    }
+                                                </p>
+                                                <p>@item.Text</p>
+                                                @if (item.Reported)
+                                                {
+                                                    <p>Użytkownik o adresie IP:@item.Reported_ip napisał:</p>
+                                                    <p style="font-style:italic">@item.Reported_reason</p>
+                                                }
+                                                @if (item.IsShow)
+                                                {
+                                                    <input type="button" class="btn btn-danger article-comment-hide-@item.Id" onclick="hide(@item.Id)" value="Ukryj" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="button" class="btn btn-danger article-comment-show-@item.Id" onclick="show(@item.Id)" value="Pokaż" />
+                                                }
+                                                @if (item.Reported)
+                                                {
+                                                    <input type="button" class="btn btn-danger article-comment-unreport-@item.Id" onclick="unreport(@item.Id)" value="Odrzuć" />
+                                                }
+                                            </div>
+                                        }
+                                        else if (item.Reported == true)
+                                        {
+                                            <div id="article-comment-@item.Id" class="article-comment article-comment-reported">
+                                                @if (item.User != null && item.User.Photo != null)
+                                                {
+                                                    <div style="background-image:url('/Images/User/@item.User.Photo');" class="article-comment-avatar"></div>
+                                                }
+                                                else
+                                                {
+                                                    <div style="background-image:url('/Images/Admin/User.jpg');" class="article-comment-avatar"></div>
+                                                }
+                                                <p>
+                                                    @if (item.Name == null)
+                                                    {
+                                                        <b>@item.User.ForName @item.User.SurName.Substring(0, 1).</b>
+                                                    }
+                                                    else
+                                                    {
+                                                        <b>@item.Name</b>
+                                                    }
+                                                    <span>@item.CreateDate.ToString().Substring(0, 16)</span>
+
+                                                </p>
+                                                <p>@item.Text</p>
+                                                <p>Użytkownik o adresie IP:@item.Reported_ip napisał:</p>
+                                                <p style="font-style:italic">@item.Reported_reason</p>
+                                                @if (item.IsShow)
+                                                {
+                                                    <input type="button" class="btn btn-danger article-comment-hide-@item.Id" onclick="hide(@item.Id)" value="Ukryj" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="button" class="btn btn-danger article-comment-show-@item.Id" onclick="show(@item.Id)" value="Pokaż" />
+                                                }
+                                                <input type="button" class="btn btn-danger article-comment-unreport-@item.Id" onclick="unreport(@item.Id)" value="Odrzuć" />
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div id="article-comment-@item.Id" class="article-comment">
+                                                @if (item.User != null && item.User.Photo != null)
+                                                {
+                                                    <div style="background-image:url('/Images/User/@item.User.Photo');" class="article-comment-avatar"></div>
+                                                }
+                                                else
+                                                {
+                                                    <div style="background-image:url('/Images/Admin/User.jpg');" class="article-comment-avatar"></div>
+                                                }
+                                                <p>
+                                                    @if (item.Name == null)
+                                                    {
+                                                        <b>@item.User.ForName @item.User.SurName.Substring(0, 1).</b>
+                                                    }
+                                                    else
+                                                    {
+                                                        <b>@item.Name</b>
+                                                    }
+                                                    <span>@item.CreateDate.ToString().Substring(0, 16)</span>
+
+                                                </p>
+                                                <p>@item.Text</p>
+                                                <input type="button" class="btn btn-danger article-comment-hide-@item.Id" onclick="hide(@item.Id)" value="Ukryj" />
+                                            </div>
+                                        }
+                                    }
+
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="clearfix"></div>
+                    }
+                    <br />
+                </div>
+                <div class="col-12 text-center">
+                    <p>
+                        <a href="@Url.Action("Edit","Articles",new { id=Model.Id})" class="btn btn-default btn-outline-info">Edytuj</a>
+                        <a href="@Url.Action("Index")" class="btn btn-default btn-outline-info">Wróć do listy</a>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+@Scripts.Render("~/Scripts/Sites/Articles/Details.js")

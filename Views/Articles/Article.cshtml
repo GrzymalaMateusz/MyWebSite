@@ -1,0 +1,202 @@
+﻿@model MyWebsite.Models.Article
+
+@{
+    ViewBag.Title = Model.Title;
+}
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-3">
+            <div class="row">
+                @{Html.RenderAction("PopularArticles", "Articles");}
+            </div>
+        </div>
+        <div class="col-12 col-md-9">
+
+            <div class="site-title text-center">
+                <h2>@ViewBag.Title</h2>
+                <div class="breadcrumb-site-title">
+                    <ul class="breadcrumb">
+                        <li><a href="@Url.Action( "Index", "Home")">Strona domowa</a></li>
+                        <li><a href="@Url.Action( "Articles", "Articles", new {page=1, search = "" })">Aktualności</a></li>
+                        <li>@ViewBag.Title</li>
+                    </ul>
+                </div>
+            </div>
+
+            <img class="img-fluid article-head-thumb" src="/Images/Article/@Html.DisplayFor(model => model.Thumb)">
+
+
+
+            
+            <div>
+                <p class="article-data">
+                    @if (Model.ShowUser && Model.User != null)
+                    {
+                        <span class="article-user">@Model.User.ForName @Model.User.SurName </span>
+                    }
+                    @if (Model.PublishDate != null)
+                    {
+                        <span>@Model.PublishDate.ToString().Substring(0, 10) @Model.PublishDate.ToString().Substring(10, 6) </span>
+                    }
+                    @if (Model.Category != null)
+                    {
+                        <span>@Html.RouteLink(@Model.Category.CategoryName.ToUpper(), "ArticlesCat", new { cat = @Model.Category.CategoryName }) </span>
+                    }
+
+                    @if (Model.Views != null)
+                    {
+                        <span>@Model.Views WYŚWIETLEŃ</span>
+                    }
+                </p>
+            </div>
+            <div class="clearfix"></div>
+            <p class="article-text">
+                @if (Model.Text != null)
+                {
+                    @Html.Raw(Model.Text.Replace("\n", "<br />"))
+                }
+            </p>
+            @if (Model.Tags != null)
+            {
+                <ul class="article-tags">
+                    @foreach (string item in Model.Tags.Split(' '))
+                    {
+                        <a href="@Url.Action( "Articles", "Articles", new {page=1, search = item })"><li class="article-tag">@item</li></a>
+                    }
+                </ul>
+            }
+            @if (Model.Photos.Count != 0 || Model.Thumb != null)
+            {
+
+                <div id="article-gallery" class="row article-gallery">
+
+                    <div class="col-12">
+                        <h2>Galeria</h2>
+                        <div class="sep-double "></div>
+                    </div>
+                    <div id="height-find" class="col-12 col-md-4">
+
+                        <a class="fancybox" href="~/Images/Article/@Model.Thumb" rel="gallery">
+                            <div  class="article-gallery-hover" style="padding-bottom:30px">
+                                <img src="~/Images/Article/@Model.Thumb" class="img-fluid" style="border-radius:17px;">
+                            </div>
+                        </a>
+                    </div>
+
+                    @foreach (var item in Model.Photos)
+                    {
+                        <div class="col-12 col-md-4">
+
+                            <a class="fancybox" href="~/Images/Article/Gallery/@item.Path" rel="gallery">
+
+                                <div class="article-gallery-hover" style="padding-bottom:30px">
+                                    <img src="~/Images/Article/Gallery/@item.Path" class="img-fluid" style="border-radius:17px;">
+                                </div>
+                            </a>
+                        </div>
+                    }
+
+                </div>
+                if (Model.Photos.Count > 4)
+                {
+                    <div class="col-12 text-center">
+                        <button id="article-gallery-show" class="article-show-more">ZOBACZ WIĘCEJ</button>
+                    </div>
+                }
+
+
+            }
+            @if (Model.CommentAloved == true)
+            {
+                <div class="row article-comments">
+                    <div class="col-12">
+                        <h2>Komentarze</h2>
+                        <div class="sep-double "></div>
+                    </div>
+                    <div id="article-comments" class="col-12">
+                        @if (Model.Comments.Where(p => p.IsShow != false).ToList().Count == 0)
+                        {
+                            <div class="alert alert-info">Brak komentarzy!!!</div>
+                        }
+                        else
+                        {
+                            foreach (var item in Model.Comments.Where(p => p.IsShow != false).ToList())
+                            {
+                                <div class="article-comment">
+                                    @if (item.User != null && item.User.Photo != null)
+                                    {
+                                        <div style="background-image:url('/Images/User/@item.User.Photo');" class="article-comment-avatar"></div>
+                                    }
+                                    else
+                                    {
+                                        <div style="background-image:url('/Images/Admin/User.jpg');" class="article-comment-avatar"></div>
+                                    }
+                                    <p>
+                                        @if (item.Name == null)
+                                        {
+                                            <b>@item.User.ForName @item.User.SurName.Substring(0, 1).</b>
+                                        }
+                                        else
+                                        {
+                                            <b>@item.Name</b>
+                                        }
+                                        <span>@item.CreateDate.ToString().Substring(0, 16)</span>
+                                        @if (item.Reported != true)
+                                        {
+                                            <span class="pull-right"><a href="#" title="Zgłoś nadużycie" class="article-comment-report" data-toggle="modal" data-target="#myModal1" onclick="report_comment(@item.Id)">!</a></span>
+                                        }
+                                    </p>
+                                    <p>@item.Text</p>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="col-12 article-leave-comment">
+                        <br>
+                        <h2>Dodaj Komentarz</h2>
+                        <div class="sep-double "></div>
+                        <div class="row">
+                            <input id="input_id" type="hidden" name="ida" value="@Model.Id" />
+                            @if (!Request.IsAuthenticated)
+                            {
+                                <div class="col-12 form-group">
+                                    <input placeholder="Imię i nazwisko/Nick" id="input_name" name="CommentName" class="form-control" type="text">
+                                </div>
+
+                            }
+
+                            <div class="col-md-12 col-12 form-group">
+                                <textarea placeholder="Tekst" id="input_text" name="CommentText" class="form-control" style="height: 150px;width:100%"></textarea>
+                            </div>
+                        </div>
+                        <button id="article-comments-comment" class="article-comment-send" style="width:100%">Skomentuj</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="clearfix"></div>
+            }
+            <br />
+        </div>
+    </div>
+</div>
+<div id="myModal1" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Zgłoś nadużycie</h4>
+            </div>
+            <div class="modal-body">
+                <p>Podaj powód:</p>
+                <textarea id="modal-report-comment-text" class="form-control"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-comment-report-confirmed" type="button" class="btn btn-default btn-success pull-left" data-dismiss="modal">Zgłoś</button>
+                <button type="button" class="btn btn-default btn-danger pull-left" data-dismiss="modal">Anuluj</button>
+            </div>
+        </div>
+    </div>
+</div>
+        @Scripts.Render("~/Scripts/Sites/Articles/Article.js")

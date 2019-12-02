@@ -1,0 +1,75 @@
+﻿@model MyWebsite.Models.Portfolio
+
+@{
+    ViewBag.Title = "Edytuj Portfolio";
+}
+<div class="container">
+    <div class="row">
+        @{Html.RenderAction("Menu", "Admin");}
+        <div class="col-12 pl-50px">
+            <h2>Edytuj</h2>
+
+            @using (Html.BeginForm(Html.BeginForm("Edit", "Portfolios", FormMethod.Post, new { enctype = "multipart/form-data" })))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    <h4>Portfolio</h4>
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.Id)
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Photo, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            <div class="fileUpload">
+                                <input class="form-control" id="uploadFile" disabled="disabled" placeholder="Wskaż plik" type="text">
+                                <div class="fileUploadBtn btn btn-primary">
+                                    <span>Prześlij</span>
+                                    <input class="upload" name="PhotoP" id="uploadBtn" type="file" accept="image/*" onchange="loadFile(event)">
+                                </div>
+                            </div>
+                            <img src="~/Images/Portfolio/@Model.Photo" id="thumbs-preview" style="width:auto;height:150px; overflow:hidden;border-radius:4px;margin-top:10px" />
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.WorkRange, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.WorkRange, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.WorkRange, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-12 text-center">
+                            <input type="submit" value="Zapisz" class="btn btn-default btn-outline-success" />
+                            <a href="@Url.Action("Index", "Portfolios")" class="btn btn-default btn-outline-danger">Anuluj</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div>
+            </div>
+        </div>
+    </div>
+</div>
+@Scripts.Render("~/Scripts/Sites/portfolios/Edit.js")

@@ -1,0 +1,81 @@
+﻿@model MyWebsite.Models.ExternalLoginConfirmationViewModel
+@{
+    ViewBag.Title = "Zarejestruj";
+}
+<div class="container">
+
+    <h2>@ViewBag.Title.</h2>
+    <h3>Skojarz konto @ViewBag.LoginProvider.</h3>
+
+    @using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <h4>Formularz skojarzenia</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <p class="text-info">
+            Pomyślne uwierzytelnienie za pomocą konta <strong>@ViewBag.LoginProvider</strong>.
+            Wprowadź poniżej nazwę użytkownika dla tej witryny i kliknij przycisk Rejestruj, aby zakończyć
+            logowanie.
+        </p>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.ForName, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.ForName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ForName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.SurName, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.SurName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.SurName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Phone, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Photo, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                <div class="fileUpload">
+                    <input class="form-control" id="uploadFile" disabled="disabled" placeholder="Wskaż plik" type="text">
+                    <div class="fileUploadBtn btn btn-primary">
+                        <span>Prześlij</span>
+                        <input class="upload" name="avatar" id="uploadBtn" type="file" accept="image/*" onchange="loadFile(event)">
+                    </div>
+                </div>
+                <img id="avatar-preview" style="width:auto;height:150px; overflow:hidden;border-radius:4px;margin-top:10px" />
+                <script>
+                    var loadFile = function (event) {
+                        var output = document.getElementById('avatar-preview');
+                        output.src = URL.createObjectURL(event.target.files[0]);
+                        var trigger = document.getElementById('uploadFile');
+                        trigger.value = event.target.files[0].name;
+                    };
+
+                </script>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" class="btn btn-default" value="Zarejestruj" />
+            </div>
+        </div>
+    }
+</div>
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

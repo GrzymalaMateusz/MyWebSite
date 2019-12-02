@@ -1,0 +1,126 @@
+﻿@model PagedList.IPagedList<MyWebsite.Models.Article>
+@using PagedList.Mvc;
+@using System.Text.RegularExpressions
+@{
+    ViewBag.Title = "Aktualności";
+}
+<div class="container">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="site-title text-center">
+                <h2>@ViewBag.Title</h2>
+                <div class="breadcrumb-site-title">
+                    <ul class="breadcrumb">
+                        <li><a href="@Url.Action( "Index", "Home")">Strona domowa</a></li>
+                        <li>@ViewBag.Title</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="row">
+                <div class="col-12">
+                    <div class="article-search-box">
+                        <form>
+                            <div class="input-group" novalidate="novalidate">
+                                <input name="search" class="pull-left form-control" placeholder="Szukaj" type="text">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default pull-left OkBtn"><i class="fa fa-search"></i></button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                @{Html.RenderAction("Categories", "ArticleCategories");}
+                @{Html.RenderAction("PopularArticles", "Articles");}
+            </div>
+        </div>
+
+        <div class="col-12 col-md-9">
+            <div class="row">
+                @if (Model.Count() == 0)
+                {
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <strong>Informacja!</strong> Brak Artykułów do wyświetlenia!
+                        </div>
+                    </div>
+                }
+                @foreach (var item in Model)
+                {
+                    <div class="col-12" style="margin-bottom:50px">
+                        <div class="articles_block">
+                            <a href="@Url.Action("Article", "Articles", new {id=item.Id, titl = Regex.Replace(@item.Title,"([^a-zA-Zą-ź0-9 ])","").Replace(" ","-")})">
+                                <img class="img-fluid" src="/Images/Article/@item.Thumb" alt="@item.Title">
+
+                            </a>
+                            <h3>
+                                <a href="@Url.Action("Article", "Articles", new {id=item.Id, titl = Regex.Replace(@item.Title,"([^a-zA-Zą-ź0-9 ])","").Replace(" ","-")})">@item.Title</a>
+                            </h3>
+                            <p class="articles_block-panel">
+                                <span>@item.User.ForName.ToUpper()</span>
+                                @if (item.Category != null)
+                                {
+                                    <span>
+                                        | W @Html.RouteLink(item.Category.CategoryName.ToUpper(), "ArticlesCat", new { cat = item.Category.CategoryName })
+                                    </span>
+                                }
+                                <span>| @item.PublishDate.ToString().Substring(0, 16)</span>
+                            </p>
+                            <p class="articles_block-text">
+                                @if (item.Text != null)
+                                {
+                                    if (item.Text.Length < 300)
+                                    {
+                                        @item.Text;
+                                    }
+                                    else
+                                    {
+                                        @item.Text.Substring(0, 300);<span>...</span>
+                                    }
+                                }
+
+
+                            </p>
+                            <p class="articles_block-more">
+                                <span>
+                                    @if (0 < @item.Comments.Count && @item.Comments.Count < 2)
+                                    {
+                                        @item.Comments.Count <span> Komentarz</span>
+                                    }
+                                    else if (@item.Comments.Count < 5)
+                                    {
+                                        @item.Comments.Count <span> Komentarze</span>
+                                    }
+                                    else if (@item.Comments.Count > 5 || @item.Comments.Count == 0)
+                                    {
+                                        @item.Comments.Count <span> Komentarzy</span>
+                                    }
+                                </span>
+                                <a href="@Url.Action("Article", "Articles", new {id=item.Id, titl = Regex.Replace(@item.Title,"([^a-zA-Zą-ź0-9 ])","").Replace(" ","-")})" title="@item.Title" class="pull-right">
+                                    Czytaj dalej
+                                </a>
+                            </p>
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                }
+                <div class="col-12">
+                    @if (Model.Count() != 0)
+                    {
+                        <center>
+                            <p>Strona @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) z @Model.PageCount</p>
+
+                            @Html.PagedListPager(Model, page => Url.Action("Articles", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+                        </center>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
